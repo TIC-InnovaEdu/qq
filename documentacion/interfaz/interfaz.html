@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QQ - Juego Interactivo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        header {
+            background-color: #0078D7;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            width: 100%;
+        }
+        section {
+            margin: 20px;
+            text-align: center;
+        }
+        .hidden {
+            display: none;
+        }
+        .button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 10px;
+            color: white;
+            background-color: #0078D7;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #005a9e;
+        }
+        .ruleta {
+            width: 300px;
+            height: 300px;
+            border: 5px solid #0078D7;
+            border-radius: 50%;
+            position: relative;
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .ruleta canvas {
+            width: 100%;
+            height: 100%;
+        }
+        #ganador {
+            font-size: 80px;
+            color: green;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- Pantalla de inicio de sesión -->
+    <section id="inicio-sesion">
+        <h1>Inicio de Sesión</h1>
+        <form>
+            <input type="text" placeholder="Nombre" required><br>
+            <input type="password" placeholder="Contraseña" required><br>
+            <button type="button" class="button" onclick="mostrarPantalla('ruleta')">Ingresar</button>
+        </form>
+    </section>
+
+    <!-- Pantalla de la ruleta -->
+    <section id="ruleta" class="hidden">
+        <h1>Bienvenido al Juego QQ</h1>
+        <div class="ruleta">
+            <canvas id="ruletaCanvas"></canvas>
+        </div>
+        <button class="button" onclick="girarRuleta()">Girar</button>
+        <button class="button" onclick="pararRuleta()">Parar</button>
+        <button class="button" onclick="mostrarPantalla('espera')">Siguiente</button>
+    </section>
+
+    <!-- Pantalla de espera de otro usuario -->
+    <section id="espera" class="hidden">
+        <h1>Esperando a otro usuario...</h1>
+        <p>Por favor, espera mientras otro jugador se une al juego.</p>
+        <button class="button" onclick="mostrarPantalla('pregunta')">Siguiente</button>
+    </section>
+
+    <!-- Pantalla de pregunta y respuesta -->
+    <section id="pregunta" class="hidden">
+        <h1>Pregunta de <span id="materia"></span></h1>
+        <p id="texto-pregunta">¿Cuál es la capital de Francia?</p>
+        <button class="button" onclick="verificarRespuesta(this)" data-correct="false">Respuesta 1</button>
+        <button class="button" onclick="verificarRespuesta(this)" data-correct="false">Respuesta 2</button>
+        <button class="button" onclick="verificarRespuesta(this)" data-correct="false">Respuesta 3</button>
+        <button class="button" onclick="verificarRespuesta(this)" data-correct="true">Respuesta Correcta</button>
+    </section>
+
+    <!-- Pantalla de ganador -->
+    <section id="ganador" class="hidden">
+        <h1 id="texto-ganador">GANADOR (WINNER)</h1>
+    </section>
+
+    <script>
+        const materias = ["CCNN", "Inglés", "Sociales", "Lengua", "Matemáticas", "Física", "Química"];
+
+        function mostrarPantalla(id) {
+            document.querySelectorAll('section').forEach(sec => sec.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        function girarRuleta() {
+            alert('La ruleta está girando');
+        }
+
+        function pararRuleta() {
+            alert('La ruleta se ha detenido');
+        }
+
+        function verificarRespuesta(boton) {
+            const correcta = boton.dataset.correct === "true";
+            if (correcta) {
+                document.getElementById('texto-ganador').innerText = "PERDISTE (LOSER)";
+                mostrarPantalla('ganador');
+            } else {
+                alert("Incorrecto, intenta de nuevo.");
+            }
+        }
+
+        function dibujarRuleta() {
+            const canvas = document.getElementById('ruletaCanvas');
+            const ctx = canvas.getContext('2d');
+            const radius = canvas.width / 2;
+            const angleStep = (2 * Math.PI) / materias.length;
+
+            canvas.width = 300;
+            canvas.height = 300;
+
+            for (let i = 0; i < materias.length; i++) {
+                const startAngle = i * angleStep;
+                const endAngle = startAngle + angleStep;
+
+                ctx.beginPath();
+                ctx.moveTo(radius, radius);
+                ctx.arc(radius, radius, radius, startAngle, endAngle);
+                ctx.fillStyle = hsl(${(i / materias.length) * 360}, 70%, 70%);
+                ctx.fill();
+                ctx.closePath();
+
+                // Añadir texto
+                ctx.save();
+                ctx.translate(radius, radius);
+                ctx.rotate(startAngle + angleStep / 2);
+                ctx.textAlign = "right";
+                ctx.fillStyle = "#000";
+                ctx.font = "16px Arial";
+                ctx.fillText(materias[i], radius - 10, 5);
+                ctx.restore();
+            }
+        }
+
+        window.onload = dibujarRuleta;
+    </script>
+</body>
+</html>

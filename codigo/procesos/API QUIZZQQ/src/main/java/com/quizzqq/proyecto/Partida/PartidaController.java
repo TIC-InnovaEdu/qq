@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -27,6 +28,7 @@ public class PartidaController {
 
     private final DataSource dataSource;
     private final JwtService jwtService;
+    private final GameSessionManager sessionManager;
 
     @PostMapping
     public ResponseEntity<?> crearPartida(@RequestHeader("Authorization") String token) {
@@ -58,5 +60,11 @@ public class PartidaController {
             }
             throw new SQLException("Usuario no encontrado");
         }
+    }
+
+    @PostMapping("/iniciar")
+    public String iniciarPartida(@RequestParam String playerId) {
+        String sessionId = sessionManager.findOrCreateGame(playerId);
+        return sessionId != null ? "Partida creada: " + sessionId : "Esperando oponente...";
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 
 import com.quizzqq.proyecto.Partida.GameWebSocketHandler;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor;
 
 @Configuration
 @EnableWebSocket
@@ -17,6 +18,8 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(gameWebSocketHandler, "/game").setAllowedOrigins("*");
+        registry.addHandler(gameWebSocketHandler, "/game")
+                .setAllowedOriginPatterns("*") // Permitir conexiones desde cualquier origen
+                .addInterceptors(new HttpSessionHandshakeInterceptor()); // Permitir sesiones HTTP
     }
 }

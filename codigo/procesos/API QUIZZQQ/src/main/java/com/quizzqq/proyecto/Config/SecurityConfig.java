@@ -27,7 +27,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authRequest -> authRequest
                 .requestMatchers("/auth/**").permitAll()
-                .requestMatchers("/personas/**").permitAll() // Permitir acceso público
+                .requestMatchers("/personas/**").permitAll()
+                .requestMatchers("/game/**").permitAll() // Permite conexiones a /game
                 .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManager -> sessionManager
@@ -37,4 +38,5 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
+
 }
